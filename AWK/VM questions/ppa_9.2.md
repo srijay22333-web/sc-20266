@@ -35,21 +35,18 @@ very
 will
 ```
 
----
-
 ## 💻 Solution (repeat.awk)
 
-```awk
+```awk id="p4v0u1"
 {
-    for (i = 1; i <= NF; i++) {
-        word = tolower($i)
+    for (i = 1; i < NF; i++) {
+        w1 = tolower($i)
+        w2 = tolower($(i+1))
 
-        if (word == prev && !seen[word]) {
-            print word
-            seen[word] = 1
+        if (w1 == w2 && !seen[w1]) {
+            print w1
+            seen[w1] = 1
         }
-
-        prev = word
     }
 }
 ```
@@ -60,60 +57,61 @@ will
 
 ### 🔹 Loop Through Words
 
-```awk
-for (i = 1; i <= NF; i++)
+```awk id="u6q1p6"
+for (i = 1; i < NF; i++)
 ```
 
-* Processes each **word (field)** in the line
+* Iterates till second-last word
+* Allows comparison with next word
 
 ---
 
-### 🔹 `tolower($i)`
+### 🔹 Convert to Lowercase
 
-* Converts words to lowercase
-  👉 Ensures:
-
+```awk id="m1k8jh"
+w1 = tolower($i)
+w2 = tolower($(i+1))
 ```
-"The the" → treated as duplicate
+
+* Ensures case-insensitive matching
+
+---
+
+### 🔹 Check Duplicate
+
+```awk id="s9s7we"
+if (w1 == w2 && !seen[w1])
 ```
 
----
-
-### 🔹 `word == prev`
-
-* Checks if current word is same as **previous word**
+* Checks consecutive duplicates
+* Avoids repeated printing
 
 ---
 
-### 🔹 `!seen[word]`
+### 🔹 Store Printed Words
 
-* Ensures word is printed **only once**
-
----
-
-### 🔹 `seen[word] = 1`
+```awk id="1zx2ya"
+seen[w1] = 1
+```
 
 * Marks word as already printed
 
 ---
 
-## 🎯 Key Concepts
+## 🎯 Key Idea
 
-* `NF` → number of words in a line
-* `tolower()` → normalize case
-* `prev` → stores previous word
-* Associative array `seen[]` → avoids duplicates
+👉 Compare **current word** with **next word**
 
 ---
 
 ## ⚠️ Important Points
 
-* Only **consecutive duplicates** are considered
-* Case-insensitive comparison
-* Output preserves **first occurrence order**
+* Use `$(i+1)` (NOT `$i+1`)
+* Works only for **consecutive duplicates**
+* Output order is preserved
 
 ---
 
 ## 🧠 Memory Trick
 
-👉 **Compare with previous → print once → mark as seen**
+👉 **Current == Next → Print once → Mark seen**
