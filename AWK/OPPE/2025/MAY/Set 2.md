@@ -1,4 +1,4 @@
-# 📘 Weekly & Daily Average Production (Manual Column Method)
+# 📘 Weekly & Daily Average Production using AWK
 
 ---
 
@@ -21,14 +21,14 @@ You are given a CSV file where:
 
 2. For all rows:
 
-   * Compute the **average production per day**
+   * Compute the **average production for each day**
    * Print it as the **last row**
 
 ---
 
 ## 📥 Sample Input
 
-```text id="ps1"
+```text id="ap1"
 100,150,200,255,300,350,400
 110,160,210,260,310,360,410
 120,170,220,270,320,370,420
@@ -39,7 +39,7 @@ You are given a CSV file where:
 
 ## 📤 Sample Output
 
-```text id="ps2"
+```text id="ap2"
 100,150,200,255,300,350,400,250.714
 110,160,210,260,310,360,410,260
 120,170,220,270,320,370,420,270
@@ -51,36 +51,37 @@ You are given a CSV file where:
 
 ## 💻 Solution (script.awk)
 
-```awk id="ps3"
+```awk id="ap3"
 #!/usr/bin/gawk -f
 
 BEGIN {
-    FS=","; OFS=","
+    FS = ","
+    OFS = ","
 }
 
 {
-    # calculate row sum
-    sum = $1+$2+$3+$4+$5+$6+$7
+    summ = 0
 
-    # count rows
-    row_count++
+    for (i = 1; i <= NF; i++) {
+        summ += $i          # row total
+        col[i] += $i        # column total
+    }
 
-    # print row average
-    print $1,$2,$3,$4,$5,$6,$7, sum/NF
+    print $0, summ / NF     # row average
 
-    # accumulate column sums
-    col1 += $1
-    col2 += $2
-    col3 += $3
-    col4 += $4
-    col5 += $5
-    col6 += $6
-    col7 += $7
+    count++                 # number of rows
 }
 
 END {
-    print col1/row_count, col2/row_count, col3/row_count,
-          col4/row_count, col5/row_count, col6/row_count, col7/row_count
+    for (i = 1; i <= 7; i++) {
+        printf "%s", col[i] / count
+
+        if (i < 7) {
+            printf ","
+        }
+    }
+
+    printf "\n"
 }
 ```
 
@@ -92,80 +93,88 @@ END {
 
 ### 🔹 Field Separator
 
-```awk id="ps4"
-FS=","; OFS=","
+```awk id="ap4"
+FS = ","
+OFS = ","
 ```
 
-👉 Input and output are CSV format
+👉 CSV input and output
+
+---
+
+### 🔹 Loop Through Columns
+
+```awk id="ap5"
+for (i = 1; i <= NF; i++)
+```
+
+👉 Iterates all 7 days
 
 ---
 
 ### 🔹 Row Sum
 
-```awk id="ps5"
-sum = $1+$2+$3+$4+$5+$6+$7
+```awk id="ap6"
+summ += $i
 ```
 
-👉 Adds production of all 7 days
+👉 Total production of the week
 
 ---
 
-### 🔹 Row Count
+### 🔹 Column Sum
 
-```awk id="ps6"
-row_count++
+```awk id="ap7"
+col[i] += $i
 ```
 
-👉 Counts total weeks
+👉 Total production per day
 
 ---
 
 ### 🔹 Row Average
 
-```awk id="ps7"
-sum/NF
+```awk id="ap8"
+summ / NF
 ```
 
-👉 `NF = 7` → calculates weekly average
+👉 Weekly average
 
 ---
 
-### 🔹 Column Sums
+### 🔹 Row Count
 
-```awk id="ps8"
-col1 += $1
-...
-col7 += $7
+```awk id="ap9"
+count++
 ```
 
-👉 Stores total production per day
+👉 Number of weeks
 
 ---
 
 ### 🔹 Column Average (END Block)
 
-```awk id="ps9"
-col1/row_count
+```awk id="ap10"
+col[i] / count
 ```
 
-👉 Computes average for each day
+👉 Daily average
 
 ---
 
 ## 🎯 Key Idea
 
-👉 Perform **two types of aggregation**:
+👉 Use same logic as total:
 
-* Row-wise → weekly average
-* Column-wise → daily average
+* Just divide at the right place
 
 ---
 
 ## ⚠️ Important Points
 
-* Hardcoded columns (`$1` to `$7`)
-* Works only when columns = 7
-* Must divide by `NF` and `row_count`
+* `NF` → number of columns (7)
+* `count` → number of rows
+* Use `END` for final result
 
 ---
 
@@ -173,15 +182,17 @@ col1/row_count
 
 👉
 
-* Row → sum → divide by NF
-* Column → sum → divide by rows
+* Row → summ / NF
+* Column → col[i] / count
 
 ---
 
 ## 🚀 Final Insight
 
-This approach is:
+This problem teaches:
 
-* ✔ Simple to understand
-* ❌ Not flexible (fixed columns)
+* Reuse logic (sum → average)
+* Aggregation + division
+* Clean AWK structure
 
+---
