@@ -12,7 +12,7 @@ Name Value
 
 ---
 
-### 🎯 Your Task
+## 🎯 Your Task
 
 * For each name:
 
@@ -57,14 +57,19 @@ BEGIN {
 
 {
 	name = $1
-    value = $2
-    if (!(name in min) || value < min[name])
-        min[name] = $2
+	value = $2
+
+	if (!(name in min) || value < min[name]) {
+		min[name] = value
+	}
 }
 
 END {
-    for (name in min)
-        print name, min[name]
+	n = asorti(min, s, "@ind_str_asc")
+
+	for (i = 1; i <= n; i++) {
+		print s[i], min[s[i]]
+	}
 }
 ```
 
@@ -74,83 +79,63 @@ END {
 
 ---
 
-## 🔹 First time OR smaller value
+## 🔹 Track Minimum
 
 ```awk
-!($1 in min)
+if (!(name in min) || value < min[name])
 ```
 
-👉 First occurrence initializes value
-
-```awk
-$2 < min[$1]
-```
-
-👉 New value is smaller
+👉 First time OR smaller value → update
 
 ---
 
-## 🔹 Update minimum
+## 🔹 Store Minimum
 
 ```awk
-min[$1] = $2
+min[name] = value
 ```
+
+---
+
+## 🔹 Sort Names
+
+```awk
+asorti(min, s, "@ind_str_asc")
+```
+
+👉 Sorts keys (names) alphabetically
+
+---
+
+## 🔹 Print in Order
+
+```awk
+print s[i], min[s[i]]
+```
+
+👉 Access sorted keys
 
 ---
 
 # 🎯 Key Idea
 
 👉
-**if new OR smaller → replace**
+**first OR smaller → update → sort → print**
 
 ---
 
-# ⚠️ Important Case (NEGATIVE VALUES)
+# ⚠️ Important Points
 
----
-
-## 📥 Input
-
-```text
-Alice -10
-Alice -25
-Bob -20
-Alice -5
-Bob -30
-```
-
----
-
-## 📤 Output
-
-```text
-Alice -25
-Bob -30
-```
-
----
-
-### ✅ Why this works
-
-* First value initializes
-* Then compares correctly even for negatives
-
----
-
-# ❌ Wrong Approach (Common Mistake)
-
-```awk
-min[$1] = 0
-```
-
-👉 ❌ fails for positive-only or mixed values
+* `asorti()` sorts **keys**, not values
+* `"@ind_str_asc"` → alphabetical order
+* Works even if input order is random
 
 ---
 
 # 🧠 Memory Trick
 
 👉
-**first OR smaller → update**
+**min = <
+asorti = sort keys**
 
-
-Answer that → you’ve mastered **min problems in AWK (including negatives)** 🚀
+---
